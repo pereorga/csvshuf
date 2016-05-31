@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+
+"""
+Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV.
+
+Forked from csvcut (https://gist.github.com/bycoffe/187278).
+
+
+Usage:
+    csvshuf -c1 foobar.csv
+    (shuffles the first column of each row of foobar.csv using Python's shuffle())
+
+    svshuf -c2 -k foobar.csv
+    (shuffles the second column of each row using Knuth-Fischer-Yeats algorithm.)
+
+    svshuf -c3 -s foobar.csv
+    (shuffles the third column of each row using Sattolo's algorithm.)
+
+    csvshuf foobar.csv
+    (shuffles all the columns of foobar.csv)
+
+    csvshuf -C1 foobar.csv
+    (shuffles all the columns but the first of foobar.csv)
+
+    head -10 foobar.csv | csvshuf -c 1,3
+    (shuffles the first and third columns of the first ten lines of foobar.csv)
+
+    csvshuf -c1,3 -d "|" foobar.csv
+    (shuffles the first and third columns of the pipe-delimited foobar.csv)
+
+    csvshuf -c 1,3 -t foobar.csv
+    (shuffles the first and third columns of the tab-delimited foobar.csv if present, the -d option will be ignored.)
+
+    csvshuf -c 1,2,3 -d "|" -o , foobar.csv
+    (shuffles the first three columns of the pipe-delimited foobar.csv; output will be comma-delimited.)
+
+    csvshuf -c 1,2,3 -o "|" foobar.csv
+    (shuffles the first three columns of the comma-delimited foobar.csv; output will be pipe-delimited.)
+
+    csvshuf -c 1,2 -d "," -q "|" foobar.csv
+    (shuffles the first two columns of the comma-delimited, pipe-quoted foobar.csv.)
+"""
+
+import csv
+import sys
+import random
+import getopt
+
+
+# From http://programmers.stackexchange.com/q/218255/149749
+def shuffle_kfy(items):
+    i = len(items) - 1
+    while i > 0:
+        j = random.randrange(i + 1)  # 0 <= j <= i
+        items[j], items[i] = items[i], items[j]
+        i = i - 1
+    return items
+
+
+def shuffle_sattolo(items):
+    i = len(items)
+    while i > 1:
+        i = i - 1
+        j = random.randrange(i)  # 0 <= j <= i-1
+        items[j], items[i] = items[i], items[j]
+    return items
+
+
+def shuffle(items, mode):
+    if mode == 'kfy':
+        return shuffle_kfy(items)
+    if mode == 'sattolo':
+        return shuffle_sattolo(items)
+
+    random.shuffle(items)
+    return items
+
+
+opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
+if args:
+    i = open(args[0], 'U')
+else:
+    i = sys.stdin
+
+delimiter = ','
+output_delimiter = ','
+cols = None
+no_cols = None
+quotechar = None
+search_mode = ''
+
+if opts:
+    opts = dict(opts)
+    if '-c' in opts:
+        cols = map(int, opts['-c'].split(','))
+    elif '-C' in opts:
+        no_cols = map(int, opts['-C'].split(','))
+    if '-k' in opts:
+        search_mode = 'kfy'
+    elif '-s' in opts:
+        search_mode = 'sattolo'
+    if '-t' in opts:
+        delimiter = "\t"
+    elif '-d' in opts:
+        delimiter = opts['-d']
+    if '-o' in opts:
+        output_delimiter = opts['-o']
+    if '-q' in opts:
+        quotechar = opts['-q']
+
+if cols and 0 in cols or no_cols and 0 in no_cols:
+    print("Invalid column 0. Columns are 1-based")
+    exit(1)
+
+reader = csv.reader(i, delimiter=delimiter, quotechar=quotechar)
+headers = next(reader)
+
+table = []
+for c in range(len(headers)):
+    table.append([])
+
+for row in reader:
+    for c in range(len(headers)):
+        table[c].append(row[c])
+
+if not cols and not no_cols:
+    cols = range(len(headers))
+elif no_cols:
+    cols = list(set(range(len(headers))) - set(no_cols))
+
+for c in cols:
+    if c > len(headers):
+        print('Invalid column {}. Last column is {}').format(c, len(headers))
+        exit(1)
+    table[c - 1] = shuffle(table[c - 1], search_mode)
+
+table = zip(*table)
+
+writer = csv.writer(sys.stdout, delimiter=output_delimiter)
+writer.writerow(headers)
+for row in table:
+    writer.writerow(row)
