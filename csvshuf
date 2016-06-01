@@ -4,38 +4,6 @@ Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV
 
 Forked from csvcut (https://gist.github.com/bycoffe/187278)
 Improved thanks to http://codereview.stackexchange.com/q/129806/13659
-
-
-Usage:
-    csvshuf -c1 foobar.csv
-    (shuffles the first column of each row of foobar.csv)
-
-    csvshuf -c3 -s foobar.csv
-    (shuffles the third column of each row using Sattolo's algorithm.)
-
-    csvshuf foobar.csv
-    (shuffles all the columns of foobar.csv)
-
-    csvshuf -C1 foobar.csv
-    (shuffles all the columns but the first of foobar.csv)
-
-    head -10 foobar.csv | csvshuf -c 1,3
-    (shuffles the first and third columns of the first ten lines of foobar.csv)
-
-    csvshuf -c1,3 -d "|" foobar.csv
-    (shuffles the first and third columns of the pipe-delimited foobar.csv)
-
-    csvshuf -c 1,3 -t foobar.csv
-    (shuffles the first and third columns of the tab-delimited foobar.csv if present, the -d option will be ignored.)
-
-    csvshuf -c 1,2,3 -d "|" -o , foobar.csv
-    (shuffles the first three columns of the pipe-delimited foobar.csv; output will be comma-delimited.)
-
-    csvshuf -c 1,2,3 -o "|" foobar.csv
-    (shuffles the first three columns of the comma-delimited foobar.csv; output will be pipe-delimited.)
-
-    csvshuf -c 1,2 -d "," -q "|" foobar.csv
-    (shuffles the first two columns of the comma-delimited, pipe-quoted foobar.csv.)
 """
 
 import csv
