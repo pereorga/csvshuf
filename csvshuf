@@ -41,7 +41,7 @@ Usage:
 import csv
 import sys
 import random
-import getopt
+import argparse
 
 
 def shuffle_sattolo(items):
@@ -52,42 +52,47 @@ def shuffle_sattolo(items):
         items[j], items[i] = items[i], items[j]
 
 
+def column_list(string):
+    """Validate and convert comma-separated list of column numbers."""
+    try:
+        columns = list(map(int, string.split(',')))
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(*e.args)
+    for column in columns:
+        if column < 1:
+            raise argparse.ArgumentTypeError(
+                "Invalid column {!r}: column numbers start at 1."
+                .format(column))
+    return columns
+
+
 def main():
-    opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
-    if args:
-        input_file = open(args[0], 'U')
-    else:
-        input_file = sys.stdin
+    parser = argparse.ArgumentParser(description='Shuffle columns in a CSV file')
+    parser.add_argument('infile', type=argparse.FileType('r'), nargs='?',
+                        default=sys.stdin, help='Input CSV file')
+    parser.add_argument('-s', '--sattolo',
+                        action='store_const', const=shuffle_sattolo,
+                        dest='shuffle', default=random.shuffle,
+                        help="Use Sattolo's shuffle algorithm.")
+    col_group = parser.add_mutually_exclusive_group()
+    col_group.add_argument('-c', '--columns', type=column_list,
+                           help='Comma-separated list of columns to include.')
+    col_group.add_argument('-C', '--no-columns', type=column_list,
+                           help='Comma-separated list of columns to exclude.')
+    delim_group = parser.add_mutually_exclusive_group()
+    delim_group.add_argument('-d', '--delimiter', type=str, default=',',
+                             help='Input column delimiter.')
+    delim_group.add_argument('-t', '--tabbed', dest='delimiter',
+                             action='store_const', const='\t',
+                             help='Delimit input with tabs.')
+    parser.add_argument('-q', '--quotechar', type=str, default='"',
+                        help='Quote character.')
+    parser.add_argument('-o', '--output-delimiter', type=str, default=',',
+                        help='Output column delimiter.')
+    args = parser.parse_args()
 
-    delimiter = ','
-    output_delimiter = ','
-    cols = None
-    no_cols = None
-    quotechar = None
-    shuffle = random.shuffle
+    reader = csv.reader(args.infile, delimiter=args.delimiter, quotechar=args.quotechar)
 
-    if opts:
-        opts = dict(opts)
-        if '-c' in opts:
-            cols = map(int, opts['-c'].split(','))
-        elif '-C' in opts:
-            no_cols = map(int, opts['-C'].split(','))
-        if '-s' in opts:
-            shuffle = shuffle_sattolo
-        if '-t' in opts:
-            delimiter = "\t"
-        elif '-d' in opts:
-            delimiter = opts['-d']
-        if '-o' in opts:
-            output_delimiter = opts['-o']
-        if '-q' in opts:
-            quotechar = opts['-q']
-
-    if cols and 0 in cols or no_cols and 0 in no_cols:
-        sys.stderr.write('Invalid column 0. Columns are 1-based.\n')
-        exit(1)
-
-    reader = csv.reader(input_file, delimiter=delimiter, quotechar=quotechar)
     headers = next(reader)
 
     table = []
@@ -98,20 +103,21 @@ def main():
         for c in range(len(headers)):
             table[c].append(row[c])
 
-    if not cols and not no_cols:
+    cols = args.columns
+    if args.no_columns:
+        cols = list(set(range(len(headers))) - set(args.no_columns))
+    elif not cols:
         cols = range(len(headers))
-    elif no_cols:
-        cols = list(set(range(len(headers))) - set(no_cols))
 
     for c in cols:
         if c > len(headers):
             sys.stderr.write('Invalid column {0}. Last column is {1}.\n'.format(c, len(headers)))
             exit(1)
-        shuffle(table[c - 1])
+        args.shuffle(table[c - 1])
 
     table = zip(*table)
 
-    writer = csv.writer(sys.stdout, delimiter=output_delimiter)
+    writer = csv.writer(sys.stdout, delimiter=args.output_delimiter)
     writer.writerow(headers)
     for row in table:
         writer.writerow(row)
