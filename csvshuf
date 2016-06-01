@@ -10,7 +10,7 @@ Usage:
     csvshuf -c1 foobar.csv
     (shuffles the first column of each row of foobar.csv)
 
-    svshuf -c3 -s foobar.csv
+    csvshuf -c3 -s foobar.csv
     (shuffles the third column of each row using Sattolo's algorithm.)
 
     csvshuf foobar.csv
