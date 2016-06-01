@@ -84,7 +84,7 @@ def main():
             quotechar = opts['-q']
 
     if cols and 0 in cols or no_cols and 0 in no_cols:
-        print("Invalid column 0. Columns are 1-based")
+        sys.stderr.write('Invalid column 0. Columns are 1-based.\n')
         exit(1)
 
     reader = csv.reader(i, delimiter=delimiter, quotechar=quotechar)
@@ -105,7 +105,7 @@ def main():
 
     for c in cols:
         if c > len(headers):
-            print('Invalid column {}. Last column is {}').format(c, len(headers))
+            sys.stderr.write('Invalid column {0}. Last column is {1}.\n'.format(c, len(headers)))
             exit(1)
         shuffle(table[c - 1])
 
