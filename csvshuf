@@ -44,8 +44,6 @@ import random
 import getopt
 
 
-# From http://programmers.stackexchange.com/q/218255/149749
-
 def shuffle_sattolo(items):
     """Shuffle items in place using Sattolo's algorithm."""
     _randrange = random.randrange
@@ -53,65 +51,71 @@ def shuffle_sattolo(items):
         j = _randrange(i)  # 0 <= j < i
         items[j], items[i] = items[i], items[j]
 
-opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
-if args:
-    i = open(args[0], 'U')
-else:
-    i = sys.stdin
 
-delimiter = ','
-output_delimiter = ','
-cols = None
-no_cols = None
-quotechar = None
-shuffle = random.shuffle
+def main():
+    opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
+    if args:
+        i = open(args[0], 'U')
+    else:
+        i = sys.stdin
 
-if opts:
-    opts = dict(opts)
-    if '-c' in opts:
-        cols = map(int, opts['-c'].split(','))
-    elif '-C' in opts:
-        no_cols = map(int, opts['-C'].split(','))
-    if '-s' in opts:
-        shuffle = shuffle_sattolo
-    if '-t' in opts:
-        delimiter = "\t"
-    elif '-d' in opts:
-        delimiter = opts['-d']
-    if '-o' in opts:
-        output_delimiter = opts['-o']
-    if '-q' in opts:
-        quotechar = opts['-q']
+    delimiter = ','
+    output_delimiter = ','
+    cols = None
+    no_cols = None
+    quotechar = None
+    shuffle = random.shuffle
 
-if cols and 0 in cols or no_cols and 0 in no_cols:
-    print("Invalid column 0. Columns are 1-based")
-    exit(1)
+    if opts:
+        opts = dict(opts)
+        if '-c' in opts:
+            cols = map(int, opts['-c'].split(','))
+        elif '-C' in opts:
+            no_cols = map(int, opts['-C'].split(','))
+        if '-s' in opts:
+            shuffle = shuffle_sattolo
+        if '-t' in opts:
+            delimiter = "\t"
+        elif '-d' in opts:
+            delimiter = opts['-d']
+        if '-o' in opts:
+            output_delimiter = opts['-o']
+        if '-q' in opts:
+            quotechar = opts['-q']
 
-reader = csv.reader(i, delimiter=delimiter, quotechar=quotechar)
-headers = next(reader)
-
-table = []
-for c in range(len(headers)):
-    table.append([])
-
-for row in reader:
-    for c in range(len(headers)):
-        table[c].append(row[c])
-
-if not cols and not no_cols:
-    cols = range(len(headers))
-elif no_cols:
-    cols = list(set(range(len(headers))) - set(no_cols))
-
-for c in cols:
-    if c > len(headers):
-        print('Invalid column {}. Last column is {}').format(c, len(headers))
+    if cols and 0 in cols or no_cols and 0 in no_cols:
+        print("Invalid column 0. Columns are 1-based")
         exit(1)
-    shuffle(table[c - 1])
 
-table = zip(*table)
+    reader = csv.reader(i, delimiter=delimiter, quotechar=quotechar)
+    headers = next(reader)
 
-writer = csv.writer(sys.stdout, delimiter=output_delimiter)
-writer.writerow(headers)
-for row in table:
-    writer.writerow(row)
+    table = []
+    for c in range(len(headers)):
+        table.append([])
+
+    for row in reader:
+        for c in range(len(headers)):
+            table[c].append(row[c])
+
+    if not cols and not no_cols:
+        cols = range(len(headers))
+    elif no_cols:
+        cols = list(set(range(len(headers))) - set(no_cols))
+
+    for c in cols:
+        if c > len(headers):
+            print('Invalid column {}. Last column is {}').format(c, len(headers))
+            exit(1)
+        shuffle(table[c - 1])
+
+    table = zip(*table)
+
+    writer = csv.writer(sys.stdout, delimiter=output_delimiter)
+    writer.writerow(headers)
+    for row in table:
+        writer.writerow(row)
+
+
+if __name__ == "__main__":
+    main()
