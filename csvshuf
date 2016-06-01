@@ -1,17 +1,14 @@
 #!/usr/bin/env python
-
 """
 Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV.
 
-Forked from csvcut (https://gist.github.com/bycoffe/187278).
+Forked from csvcut (https://gist.github.com/bycoffe/187278)
+Improvements were made thanks to review in http://codereview.stackexchange.com/q/129806/13659
 
 
 Usage:
     csvshuf -c1 foobar.csv
-    (shuffles the first column of each row of foobar.csv using Python's shuffle())
-
-    svshuf -c2 -k foobar.csv
-    (shuffles the second column of each row using Knuth-Fischer-Yeats algorithm.)
+    (shuffles the first column of each row of foobar.csv)
 
     svshuf -c3 -s foobar.csv
     (shuffles the third column of each row using Sattolo's algorithm.)
@@ -48,33 +45,13 @@ import getopt
 
 
 # From http://programmers.stackexchange.com/q/218255/149749
-def shuffle_kfy(items):
-    i = len(items) - 1
-    while i > 0:
-        j = random.randrange(i + 1)  # 0 <= j <= i
-        items[j], items[i] = items[i], items[j]
-        i = i - 1
-    return items
-
 
 def shuffle_sattolo(items):
-    i = len(items)
-    while i > 1:
-        i = i - 1
-        j = random.randrange(i)  # 0 <= j <= i-1
+    """Shuffle items in place using Sattolo's algorithm."""
+    _randrange = random.randrange
+    for i in reversed(range(1, len(items))):
+        j = _randrange(i)  # 0 <= j < i
         items[j], items[i] = items[i], items[j]
-    return items
-
-
-def shuffle(items, mode):
-    if mode == 'kfy':
-        return shuffle_kfy(items)
-    if mode == 'sattolo':
-        return shuffle_sattolo(items)
-
-    random.shuffle(items)
-    return items
-
 
 opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
 if args:
@@ -87,7 +64,7 @@ output_delimiter = ','
 cols = None
 no_cols = None
 quotechar = None
-search_mode = ''
+shuffle = random.shuffle
 
 if opts:
     opts = dict(opts)
@@ -95,10 +72,8 @@ if opts:
         cols = map(int, opts['-c'].split(','))
     elif '-C' in opts:
         no_cols = map(int, opts['-C'].split(','))
-    if '-k' in opts:
-        search_mode = 'kfy'
-    elif '-s' in opts:
-        search_mode = 'sattolo'
+    if '-s' in opts:
+        shuffle = shuffle_sattolo
     if '-t' in opts:
         delimiter = "\t"
     elif '-d' in opts:
@@ -132,7 +107,7 @@ for c in cols:
     if c > len(headers):
         print('Invalid column {}. Last column is {}').format(c, len(headers))
         exit(1)
-    table[c - 1] = shuffle(table[c - 1], search_mode)
+    shuffle(table[c - 1])
 
 table = zip(*table)
 
