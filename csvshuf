@@ -55,9 +55,9 @@ def shuffle_sattolo(items):
 def main():
     opts, args = getopt.getopt(sys.argv[1:], "c:C:d:o:q:tks", [])
     if args:
-        i = open(args[0], 'U')
+        input_file = open(args[0], 'U')
     else:
-        i = sys.stdin
+        input_file = sys.stdin
 
     delimiter = ','
     output_delimiter = ','
@@ -87,7 +87,7 @@ def main():
         sys.stderr.write('Invalid column 0. Columns are 1-based.\n')
         exit(1)
 
-    reader = csv.reader(i, delimiter=delimiter, quotechar=quotechar)
+    reader = csv.reader(input_file, delimiter=delimiter, quotechar=quotechar)
     headers = next(reader)
 
     table = []
