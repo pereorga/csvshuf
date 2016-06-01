@@ -3,7 +3,7 @@
 Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV.
 
 Forked from csvcut (https://gist.github.com/bycoffe/187278)
-Improvements were made thanks to review in http://codereview.stackexchange.com/q/129806/13659
+Improved thanks to http://codereview.stackexchange.com/q/129806/13659
 
 
 Usage:
@@ -61,7 +61,7 @@ def column_list(string):
     for column in columns:
         if column < 1:
             raise argparse.ArgumentTypeError(
-                "Invalid column {!r}: column numbers start at 1."
+                'Invalid column {!r}: column numbers start at 1.'
                 .format(column))
     return columns
 
@@ -93,20 +93,23 @@ def main():
 
     reader = csv.reader(args.infile, delimiter=args.delimiter, quotechar=args.quotechar)
 
+    """Get the first row and use it as column headers"""
     headers = next(reader)
 
+    """Create a matrix of lists of columns"""
     table = []
     for c in range(len(headers)):
         table.append([])
-
     for row in reader:
         for c in range(len(headers)):
             table[c].append(row[c])
 
     cols = args.columns
     if args.no_columns:
+        """If columns to exclude are provided, get a list of all other columns"""
         cols = list(set(range(len(headers))) - set(args.no_columns))
     elif not cols:
+        """If no columns are provided all columns will be shuffled"""
         cols = range(len(headers))
 
     for c in cols:
@@ -115,6 +118,7 @@ def main():
             exit(1)
         args.shuffle(table[c - 1])
 
+    """Transpose the matrix"""
     table = zip(*table)
 
     writer = csv.writer(sys.stdout, delimiter=args.output_delimiter)
@@ -123,5 +127,5 @@ def main():
         writer.writerow(row)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
