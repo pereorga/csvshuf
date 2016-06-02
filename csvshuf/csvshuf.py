@@ -1,10 +1,11 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV.
 
 Forked from csvcut (https://gist.github.com/bycoffe/187278)
 Improved thanks to http://codereview.stackexchange.com/q/129806/13659
 """
+
 
 import csv
 import sys
@@ -93,7 +94,3 @@ def main():
     writer.writerow(headers)
     for row in table:
         writer.writerow(row)
-
-
-if __name__ == '__main__':
-    main()
