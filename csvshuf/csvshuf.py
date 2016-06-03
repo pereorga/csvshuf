@@ -37,8 +37,8 @@ def column_list(string):
 
 def main():
     parser = argparse.ArgumentParser(description='Shuffle columns in a CSV file')
-    parser.add_argument('infile', type=argparse.FileType('r'), nargs='?',
-                        default=sys.stdin, help='Input CSV file')
+    parser.add_argument(metavar="FILE", dest='input_file', type=argparse.FileType('r'), nargs='?',
+                        default=sys.stdin, help='Input CSV file. If omitted, read standard input.')
     parser.add_argument('-s', '--sattolo',
                         action='store_const', const=shuffle_sattolo,
                         dest='shuffle', default=random.shuffle,
@@ -60,7 +60,7 @@ def main():
                         help='Output column delimiter.')
     args = parser.parse_args()
 
-    reader = csv.reader(args.infile, delimiter=args.delimiter, quotechar=args.quotechar)
+    reader = csv.reader(args.input_file, delimiter=args.delimiter, quotechar=args.quotechar)
 
     """Get the first row and use it as column headers"""
     headers = next(reader)
