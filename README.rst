@@ -1,7 +1,7 @@
 csvshuf
 =======
 
-Shuffle cells in a CSV file. Like GNU shuf, but for CSV columns.
+Shuffle cells by column in CSV files.
 
 
 Usage
@@ -56,7 +56,6 @@ Installation
 ------------
 
     pip install csvshuf
-
 
 
 Author
