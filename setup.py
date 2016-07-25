@@ -32,7 +32,7 @@ setup(
     },
     license='GNU GPLv3',
     url='https://github.com/pereorga/csvshuf',
-    version='1.0',
+    version='1.0.0-dev',
     description='Randomize cells within columns in a CSV file. Like GNU shuf, but for CSV.',
     long_description=open('README.rst').read(),
     author='Pere Orga',
