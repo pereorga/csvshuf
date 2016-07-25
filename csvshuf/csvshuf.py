@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Shuffle cells within specified columns of a CSV file. Like GNU shuf, but for CSV.
+Shuffle cells by column in CSV files.
 
 Forked from csvcut (https://gist.github.com/bycoffe/187278)
 Improved thanks to http://codereview.stackexchange.com/q/129806/13659
