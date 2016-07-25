@@ -13,6 +13,9 @@ import random
 import argparse
 
 
+__version__ = '1.0.0-dev'
+
+
 def shuffle_sattolo(items):
     """Shuffle items in place using Sattolo's algorithm."""
     _randrange = random.randrange
@@ -58,6 +61,8 @@ def main():
                         help='Quote character.')
     parser.add_argument('-o', '--output-delimiter', type=str, default=',',
                         help='Output column delimiter.')
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args()
 
     reader = csv.reader(args.input_file, delimiter=args.delimiter, quotechar=args.quotechar)
