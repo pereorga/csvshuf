@@ -32,7 +32,7 @@ setup(
     },
     license='GNU GPLv3',
     url='https://github.com/pereorga/csvshuf',
-    version='1.0.0-dev',
+    version='1.0.1',
     description='Shuffle cells by column in CSV files.',
     long_description=open('README.rst').read(),
     author='Pere Orga',
