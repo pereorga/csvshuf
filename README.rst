@@ -7,12 +7,11 @@ Shuffle cells by column in CSV files.
 Usage
 -----
 
-Shuffle the first column of each row of foobar.csv
+Shuffle the first column of foobar.csv
 
     csvshuf -c1 foobar.csv
 
-Shuffle the third column of each row of foobar.csv using Sattolo's
-algorithm
+Shuffle the third columnof foobar.csv using Sattolo's algorithm
 
     csvshuf -c3 -s foobar.csv
 
