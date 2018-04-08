@@ -11,7 +11,7 @@ Shuffle the first column of foobar.csv
 
     csvshuf -c1 foobar.csv
 
-Shuffle the third columnof foobar.csv using Sattolo's algorithm
+Shuffle the third column of foobar.csv using Sattolo's algorithm
 
     csvshuf -c3 -s foobar.csv
 
