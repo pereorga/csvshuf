@@ -8,28 +8,25 @@ Usage
 
 .. code-block:: bash
 
-    csvfaker [-h] [-f] [-r ROWS] [-l LOCALE] [-s SEED] [-n]
-             [-p REPLACE_NEWLINE] [-d DELIMITER] [--version]
-             [FAKE [FAKE ...]]
+    usage: csvshuf [-h] [-s] [-c COLUMNS | -C NO_COLUMNS] [-d DELIMITER | -t]
+                   [-q QUOTECHAR] [-o OUTPUT_DELIMITER] [-v]
+                   [FILE]
 
     positional arguments:
-      FAKE                  The name of the fake(s) to use to generate output,
-                            separated by space. Will also be used as column
-                            headers. If omitted, the fakes 'name job state' will
-                            be used.
+      FILE                  Input CSV file. If omitted, read standard input.
 
     optional arguments:
-      -f, --list-fakes      Show a list of all available fakes.
-      -r ROWS, --rows ROWS  Number of rows to generate. If omitted it defaults to
-                            10.
-      -l LOCALE, --locale LOCALE
-                            Locale to use. Examples: 'en_US', 'es'.
-      -s SEED, --seed SEED  Seed to use. Generated result will be the same when
-                            called with the same seed.
-      -n, --no-headers-row  Do not output columns headers.
-      -p REPLACE_NEWLINE, --replace-newline REPLACE_NEWLINE
-                            Replace newline character with provided string.
+      -s, --sattolo         Use Sattolo's shuffle algorithm.
+      -c COLUMNS, --columns COLUMNS
+                            Comma-separated list of columns to include.
+      -C NO_COLUMNS, --no-columns NO_COLUMNS
+                            Comma-separated list of columns to exclude.
       -d DELIMITER, --delimiter DELIMITER
+                            Input column delimiter.
+      -t, --tabbed          Delimit input with tabs.
+      -q QUOTECHAR, --quotechar QUOTECHAR
+                            Quote character.
+      -o OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
                             Output column delimiter.
 
 
