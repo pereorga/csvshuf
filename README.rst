@@ -16,7 +16,7 @@ Usage
       FILE                  Input CSV file. If omitted, read standard input.
 
     optional arguments:
-      -s, --sattolo         Use Sattolo's shuffle algorithm.
+      -s, --sattolo         Use Sattolo shuffle algorithm.
       -c COLUMNS, --columns COLUMNS
                             Comma-separated list of columns to include.
       -C NO_COLUMNS, --no-columns NO_COLUMNS
